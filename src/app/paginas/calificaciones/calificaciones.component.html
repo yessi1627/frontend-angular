@@ -193,3 +193,9 @@
     </div>
   </div>
 </div>
+
+@if (!esEstudiante()) {
+  <div class="mt-3">
+    <app-estadisticas-curso [notas]="notasCurso()" />
+  </div>
+}

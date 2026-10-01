@@ -16,6 +16,7 @@ import { Calificacion } from '../../core/modelos';
 import { CalificacionesService } from '../../core/servicios/calificaciones.service';
 import { MateriasService } from '../../core/servicios/materias.service';
 import { SesionService } from '../../core/servicios/sesion.service';
+import { EstadisticasCursoComponent } from './estadisticas-curso.component';
 
 interface PromedioMateria {
   readonly materia: string;
@@ -31,6 +32,7 @@ interface PromedioMateria {
     InsigniaComponent,
     EstadoVacioComponent,
     CargandoFilasComponent,
+    EstadisticasCursoComponent,
   ],
   templateUrl: './calificaciones.component.html',
   styleUrl: './calificaciones.component.css',
@@ -72,6 +74,9 @@ export class CalificacionesComponent {
     ),
     { initialValue: [] },
   );
+
+  // Solo los valores numericos, para el calculo paralelo con Web Workers
+  protected readonly notasCurso = computed(() => this.notas().map((c) => c.nota));
 
   // Resumen y promedio por materia calculados en el frontend con funciones puras (core/funcional/notas.ts)
   protected readonly resumenGeneral = computed(() => resumen(this.notas().map((c) => c.nota)));

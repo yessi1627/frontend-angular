@@ -1,0 +1,98 @@
+<div class="tarjeta">
+  <div class="tarjeta-titulo flex-wrap">
+    <h2><i class="bi bi-cpu me-2 texto-3"></i>Estadísticas del curso · procesamiento paralelo</h2>
+    <div class="d-flex gap-2">
+      <button
+        type="button"
+        class="btn btn-suave btn-sm"
+        [disabled]="calculando()"
+        [class.active]="origen() === 'reales'"
+        (click)="usarReales()"
+      >
+        Notas reales
+      </button>
+      <button
+        type="button"
+        class="btn btn-suave btn-sm"
+        [disabled]="calculando()"
+        [class.active]="origen() === 'simuladas'"
+        (click)="simular()"
+      >
+        <i class="bi bi-lightning-charge"></i> Simular {{ simuladas.toLocaleString('es-CO') }} notas
+      </button>
+    </div>
+  </div>
+
+  <div class="tarjeta-cuerpo">
+    @if (resultado(); as r) {
+      <div class="row g-3 align-items-end" [class.opacity-50]="calculando()">
+        <div class="col-lg-5">
+          <div class="datos">
+            <div>
+              <small>Promedio</small>
+              <strong class="texto-nota" [attr.data-tono]="tonoNota(r.estadisticas.promedio)">{{
+                r.estadisticas.promedio ?? '—'
+              }}</strong>
+            </div>
+            <div>
+              <small>Desviación</small><strong>{{ r.estadisticas.desviacion ?? '—' }}</strong>
+            </div>
+            <div>
+              <small>Aprobación</small
+              ><strong>{{
+                r.estadisticas.porcentajeAprobadas === null
+                  ? '—'
+                  : r.estadisticas.porcentajeAprobadas + '%'
+              }}</strong>
+            </div>
+            <div>
+              <small>Rango</small
+              ><strong
+                >{{ r.estadisticas.minima ?? '—' }} – {{ r.estadisticas.maxima ?? '—' }}</strong
+              >
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-7">
+          <div class="histograma" aria-label="Distribución de notas">
+            @for (valor of r.estadisticas.histograma; track $index) {
+              <div class="columna">
+                <span class="cantidad">{{ valor.toLocaleString('es-CO') }}</span>
+                <div
+                  class="barra"
+                  [style.height.%]="alturaBarra(valor, r)"
+                  [attr.data-rango]="$index"
+                ></div>
+                <small>{{ $index }}–{{ $index + 1 }}</small>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="pie">
+        <span
+          ><i class="bi bi-database"></i>
+          {{ r.estadisticas.cantidad.toLocaleString('es-CO') }} notas</span
+        >
+        <span
+          ><i class="bi bi-diagram-3"></i> {{ r.hilos }} bloque(s) en {{ r.hilos }} Web
+          Worker(s)</span
+        >
+        <span><i class="bi bi-stopwatch"></i> {{ r.milisegundos }} ms en total</span>
+        @if (msHiloPrincipal() !== null) {
+          <span class="texto-2"
+            >Mismo cálculo en el hilo de la interfaz: {{ msHiloPrincipal() }} ms
+            (bloqueándola)</span
+          >
+        }
+      </div>
+    }
+    @if (calculando()) {
+      <div class="calculando">
+        <span class="spinner-border spinner-border-sm"></span>
+        Calculando en segundo plano… la interfaz sigue respondiendo (cuadros dibujados:
+        {{ cuadros() }})
+      </div>
+    }
+  </div>
+</div>
