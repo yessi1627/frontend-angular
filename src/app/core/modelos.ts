@@ -48,6 +48,8 @@ export interface Calificacion {
   readonly nota: number;
   readonly observacion: string | null;
   readonly fecha: string;
+  // Contador para el bloqueo optimista: cambia cada vez que alguien modifica la nota
+  readonly version: number;
   readonly estudiante?: string;
   readonly tarea?: string;
   readonly materia?: string;

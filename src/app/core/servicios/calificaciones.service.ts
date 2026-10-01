@@ -8,6 +8,8 @@ export interface DatosCalificacion {
   readonly id_usuario: number;
   readonly nota: number;
   readonly observacion: string | null;
+  // Version que el profesor leyo; null si la nota es nueva (bloqueo optimista)
+  readonly version: number | null;
 }
 
 @Injectable({ providedIn: 'root' })

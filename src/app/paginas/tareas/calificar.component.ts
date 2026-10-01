@@ -1,4 +1,13 @@
-import { Component, DestroyRef, OnInit, inject, input, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  OnInit,
+  effect,
+  inject,
+  input,
+  signal,
+  untracked,
+} from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { Subject, exhaustMap, finalize, tap } from 'rxjs';
@@ -73,10 +82,19 @@ export class CalificarComponent implements OnInit {
   protected readonly notaInvalida = signal(false);
   protected readonly clicGuardar$ = new Subject<void>();
 
-  ngOnInit(): void {
-    this.nota.set(this.actual()?.nota ?? null);
-    this.observacion.set(this.actual()?.observacion ?? '');
+  constructor() {
+    // Si la nota cambia en el store (por ejemplo, la recargo despues de un conflicto),
+    // muestro el valor nuevo en el formulario
+    effect(() => {
+      const actual = this.actual();
+      untracked(() => {
+        this.nota.set(actual?.nota ?? null);
+        this.observacion.set(actual?.observacion ?? '');
+      });
+    });
+  }
 
+  ngOnInit(): void {
     /**
      * BACKPRESSURE con exhaustMap: mientras la peticion de guardar esta en curso, IGNORA los clics
      * nuevos (no los encola ni cancela la peticion actual). Un doble clic produce una sola peticion,
@@ -97,13 +115,23 @@ export class CalificarComponent implements OnInit {
               id_usuario: this.idUsuario(),
               nota,
               observacion: this.observacion().trim() || null,
+              // BLOQUEO OPTIMISTA: envio la version que estoy viendo; si otro la cambio, la API responde 409
+              version: this.actual()?.version ?? null,
             })
             .pipe(
               aResultado(),
               tap((r) =>
                 r.coincidir({
                   ok: (c) => this.avisos.exito(`Nota ${c.nota.toFixed(1)} guardada`),
-                  fallo: (e) => this.avisos.error(e.mensaje),
+                  fallo: (e) => {
+                    if (e.codigo === 409) {
+                      // Conflicto de concurrencia: aviso y traigo la nota que guardo el otro usuario
+                      this.avisos.alerta(e.mensaje);
+                      this.store.cargar({ id_tarea: this.idTarea() }).subscribe();
+                    } else {
+                      this.avisos.error(e.mensaje);
+                    }
+                  },
                 }),
               ),
               finalize(() => this.guardando.set(false)),

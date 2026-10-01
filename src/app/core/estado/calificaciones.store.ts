@@ -52,15 +52,13 @@ export class CalificacionesStore extends Store<EstadoCalificaciones> {
   }
 
   guardar(datos: DatosCalificacion): Observable<Calificacion> {
-    return this.servicio
-      .guardar(datos)
-      .pipe(
-        tap((nueva) =>
-          this.actualizar((anterior) => ({
-            calificaciones: this.combinar(anterior.calificaciones, [nueva]),
-          })),
-        ),
-      );
+    return this.servicio.guardar(datos).pipe(
+      tap((nueva) =>
+        this.actualizar((anterior) => ({
+          calificaciones: this.combinar(anterior.calificaciones, [nueva]),
+        })),
+      ),
+    );
   }
 
   // Combino sin mutar: las nuevas reemplazan a las que tienen el mismo (tarea, estudiante)
