@@ -2,11 +2,12 @@ import { Component, OnInit, computed, inject, input, signal } from '@angular/cor
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { finalize } from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, finalize, map, of, switchMap } from 'rxjs';
 import { aResultado } from '../../core/funcional/resultado';
 import { EstadoTarea } from '../../core/modelos';
 import { AvisosService } from '../../core/servicios/avisos.service';
 import { MateriasService } from '../../core/servicios/materias.service';
+import { CalendarioService } from '../../core/servicios/microservicios.service';
 import { DatosTarea, TareasService } from '../../core/servicios/tareas.service';
 
 @Component({
@@ -38,6 +39,28 @@ export class TareaFormularioComponent implements OnInit {
     hora_entrega: ['23:59', Validators.required],
     estado: ['Pendiente' as EstadoTarea],
   });
+
+  /**
+   * Aviso de festivo: cada vez que cambia la fecha consulto el microservicio de calendario.
+   * switchMap cancela la consulta anterior si la fecha cambia rapido; si el servicio no responde
+   * (catchError) simplemente no muestro aviso: el formulario sigue funcionando.
+   */
+  private readonly calendario = inject(CalendarioService);
+  protected readonly festivo = toSignal(
+    this.formulario.controls.fecha_entrega.valueChanges.pipe(
+      debounceTime(250),
+      distinctUntilChanged(),
+      switchMap((fecha) =>
+        /^\d{4}-\d{2}-\d{2}$/.test(fecha)
+          ? this.calendario.esFestivo(fecha).pipe(
+              map((r) => (r.festivo ? r.nombre : null)),
+              catchError(() => of(null)),
+            )
+          : of(null),
+      ),
+    ),
+    { initialValue: null },
+  );
 
   ngOnInit(): void {
     const id = Number(this.id());

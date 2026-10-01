@@ -83,6 +83,14 @@
         @if (invalido('fecha_entrega')) {
           <div class="campo-error">{{ erroresApi()['fecha_entrega'] ?? 'Indique la fecha.' }}</div>
         }
+        @if (festivo(); as nombre) {
+          <div class="aviso tono-alerta mt-2 py-2" role="status">
+            <i class="bi bi-calendar-event"></i>
+            <span
+              >Es festivo en Colombia: <strong>{{ nombre }}</strong></span
+            >
+          </div>
+        }
       </div>
       <div class="col-md-4">
         <label class="form-label" for="hora">Hora límite</label>
