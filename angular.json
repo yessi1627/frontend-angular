@@ -8,7 +8,7 @@
   "projects": {
     "frontend-angular": {
       "projectType": "application",
-      "schematics": {},
+      "schematics": [],
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -25,6 +25,8 @@
               }
             ],
             "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/bootstrap-icons/font/bootstrap-icons.min.css",
               "src/styles.css"
             ]
           },
@@ -33,7 +35,7 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
+                  "maximumWarning": "700kB",
                   "maximumError": "1MB"
                 },
                 {
