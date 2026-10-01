@@ -3,12 +3,14 @@
 Interfaz web del Sistema de Gestión Escolar. Angular 22 (standalone, sin zone.js), RxJS 7.8,
 Bootstrap 5 como base y un sistema de diseño propio con modo claro y oscuro.
 
-Consume la API REST del backend: `proyectoGestorEscolar/api` (ver `api/README.md` en ese repositorio).
+Toda la comunicación pasa por el **API Gateway** del backend (`http://localhost:8080`), que reparte las peticiones
+entre la API PHP y los microservicios de notificaciones y calendario (ver `servicios/README.md` en el repositorio del backend).
 
 ## Requisitos
 
 - Node.js 22 o superior y npm.
-- Backend encendido en XAMPP (Apache + MySQL): `http://localhost/proyectoGestorEscolar/api/salud` debe responder `"estado":"ok"`.
+- Backend y microservicios encendidos: `http://localhost:8080/salud` debe responder `"estado":"ok"`
+  (ver "Cómo ejecutarlo" en el README del backend).
 
 ## Ejecutar
 
