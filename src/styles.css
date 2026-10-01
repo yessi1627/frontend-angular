@@ -1,1 +1,580 @@
-/* You can add global styles to this file, and also import other style files */
+/* ==========================================================================
+   Sistema de diseño de SIULT
+   Bootstrap 5 aporta la rejilla y los formularios; aquí defino la identidad visual
+   (colores, tipografía, superficies) para modo claro y oscuro con variables CSS.
+   ========================================================================== */
+
+:root,
+[data-bs-theme='light'] {
+  --s-primario: #1e3a8a;
+  --s-primario-hover: #1a3278;
+  --s-primario-suave: #e8edfb;
+  --s-acento: #6366f1;
+  --s-fondo: #f5f7fb;
+  --s-superficie: #ffffff;
+  --s-superficie-2: #f8fafc;
+  --s-borde: #e5e9f2;
+  --s-texto: #0f172a;
+  --s-texto-2: #475569;
+  --s-texto-3: #94a3b8;
+  --s-lateral: #0f1e4a;
+  --s-lateral-texto: #c7d2fe;
+  --s-lateral-activo: rgba(255, 255, 255, 0.1);
+  --s-exito: #059669;
+  --s-exito-suave: #d1fae5;
+  --s-alerta: #d97706;
+  --s-alerta-suave: #fef3c7;
+  --s-peligro: #dc2626;
+  --s-peligro-suave: #fee2e2;
+  --s-info: #0284c7;
+  --s-info-suave: #e0f2fe;
+  --s-sombra: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 16px rgba(15, 23, 42, 0.06);
+  --s-sombra-alta: 0 12px 40px rgba(15, 23, 42, 0.16);
+  --s-radio: 14px;
+  --s-radio-sm: 10px;
+
+  --bs-body-bg: var(--s-fondo);
+  --bs-body-color: var(--s-texto);
+  --bs-border-color: var(--s-borde);
+  --bs-primary: var(--s-primario);
+  --bs-primary-rgb: 30, 58, 138;
+  --bs-link-color: var(--s-primario);
+  --bs-link-color-rgb: 30, 58, 138;
+  --bs-link-hover-color: var(--s-acento);
+  --bs-secondary-color: var(--s-texto-2);
+  --bs-tertiary-bg: var(--s-superficie-2);
+  --bs-font-sans-serif: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --bs-border-radius: var(--s-radio-sm);
+  --bs-focus-ring-color: rgba(99, 102, 241, 0.3);
+}
+
+[data-bs-theme='dark'] {
+  --s-primario: #818cf8;
+  --s-primario-hover: #a5b4fc;
+  --s-primario-suave: rgba(129, 140, 248, 0.14);
+  --s-acento: #a5b4fc;
+  --s-fondo: #0b1120;
+  --s-superficie: #131c31;
+  --s-superficie-2: #182239;
+  --s-borde: #24304a;
+  --s-texto: #e2e8f0;
+  --s-texto-2: #94a3b8;
+  --s-texto-3: #64748b;
+  --s-lateral: #0a1022;
+  --s-lateral-texto: #a5b4fc;
+  --s-lateral-activo: rgba(129, 140, 248, 0.14);
+  --s-exito: #34d399;
+  --s-exito-suave: rgba(52, 211, 153, 0.14);
+  --s-alerta: #fbbf24;
+  --s-alerta-suave: rgba(251, 191, 36, 0.14);
+  --s-peligro: #f87171;
+  --s-peligro-suave: rgba(248, 113, 113, 0.14);
+  --s-info: #38bdf8;
+  --s-info-suave: rgba(56, 189, 248, 0.14);
+  --s-sombra: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.25);
+  --s-sombra-alta: 0 12px 40px rgba(0, 0, 0, 0.5);
+
+  --bs-body-bg: var(--s-fondo);
+  --bs-body-color: var(--s-texto);
+  --bs-border-color: var(--s-borde);
+  --bs-primary-rgb: 129, 140, 248;
+  --bs-link-color: var(--s-primario);
+  --bs-link-color-rgb: 129, 140, 248;
+  --bs-secondary-color: var(--s-texto-2);
+  --bs-tertiary-bg: var(--s-superficie-2);
+}
+
+/* ---------- Base ---------- */
+html,
+body {
+  height: 100%;
+}
+body {
+  font-family: var(--bs-font-sans-serif);
+  background: var(--s-fondo);
+  color: var(--s-texto);
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+h1,
+h2,
+h3,
+h4,
+h5 {
+  color: var(--s-texto);
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+.texto-2 {
+  color: var(--s-texto-2) !important;
+}
+.texto-3 {
+  color: var(--s-texto-3) !important;
+}
+:focus-visible {
+  outline: 2px solid var(--s-acento);
+  outline-offset: 2px;
+}
+
+/* ---------- Encabezado de página ---------- */
+.pagina-encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.pagina-encabezado h1 {
+  font-size: 1.6rem;
+  margin: 0;
+}
+.pagina-encabezado p {
+  margin: 0.25rem 0 0;
+  color: var(--s-texto-2);
+}
+.migas {
+  font-size: 0.85rem;
+  color: var(--s-texto-3);
+  margin-bottom: 0.35rem;
+}
+.migas a {
+  color: var(--s-texto-2);
+  text-decoration: none;
+}
+.migas a:hover {
+  color: var(--s-primario);
+}
+
+/* ---------- Tarjetas ---------- */
+.tarjeta {
+  background: var(--s-superficie);
+  border: 1px solid var(--s-borde);
+  border-radius: var(--s-radio);
+  box-shadow: var(--s-sombra);
+}
+.tarjeta-cuerpo {
+  padding: 1.25rem 1.5rem;
+}
+.tarjeta-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--s-borde);
+}
+.tarjeta-titulo h2 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* Indicadores numéricos del panel */
+.indicador {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.4rem;
+}
+.indicador-icono {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  font-size: 1.35rem;
+}
+.indicador-valor {
+  font-size: 1.65rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--s-texto);
+}
+.indicador-etiqueta {
+  font-size: 0.85rem;
+  color: var(--s-texto-2);
+}
+.tono-primario {
+  background: var(--s-primario-suave);
+  color: var(--s-primario);
+}
+.tono-exito {
+  background: var(--s-exito-suave);
+  color: var(--s-exito);
+}
+.tono-alerta {
+  background: var(--s-alerta-suave);
+  color: var(--s-alerta);
+}
+.tono-peligro {
+  background: var(--s-peligro-suave);
+  color: var(--s-peligro);
+}
+.tono-info {
+  background: var(--s-info-suave);
+  color: var(--s-info);
+}
+
+/* ---------- Tablas ---------- */
+.tabla {
+  width: 100%;
+  margin: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.92rem;
+}
+.tabla th {
+  padding: 0.8rem 1.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--s-texto-3);
+  background: var(--s-superficie-2);
+  border-bottom: 1px solid var(--s-borde);
+  white-space: nowrap;
+}
+.tabla td {
+  padding: 0.9rem 1.5rem;
+  border-bottom: 1px solid var(--s-borde);
+  vertical-align: middle;
+  color: var(--s-texto);
+}
+.tabla tbody tr:last-child td {
+  border-bottom: 0;
+}
+.tabla tbody tr {
+  transition: background-color 0.12s ease;
+}
+.tabla tbody tr:hover {
+  background: var(--s-superficie-2);
+}
+.tabla-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.35rem;
+}
+.tabla-scroll {
+  overflow-x: auto;
+}
+
+/* ---------- Insignias de estado ---------- */
+.insignia {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.insignia::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.insignia-neutra {
+  background: var(--s-superficie-2);
+  color: var(--s-texto-2);
+  border: 1px solid var(--s-borde);
+}
+
+/* ---------- Botones ---------- */
+.btn {
+  font-weight: 550;
+  border-radius: var(--s-radio-sm);
+  padding: 0.5rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+}
+.btn-sm {
+  padding: 0.3rem 0.65rem;
+  font-size: 0.85rem;
+}
+.btn-primary {
+  --bs-btn-bg: var(--s-primario);
+  --bs-btn-border-color: var(--s-primario);
+  --bs-btn-hover-bg: var(--s-primario-hover);
+  --bs-btn-hover-border-color: var(--s-primario-hover);
+  --bs-btn-active-bg: var(--s-primario-hover);
+  --bs-btn-disabled-bg: var(--s-primario);
+  --bs-btn-disabled-border-color: var(--s-primario);
+}
+[data-bs-theme='dark'] .btn-primary {
+  --bs-btn-color: #0b1120;
+  --bs-btn-hover-color: #0b1120;
+  --bs-btn-active-color: #0b1120;
+  --bs-btn-disabled-color: #0b1120;
+}
+.btn-suave {
+  background: var(--s-superficie-2);
+  border: 1px solid var(--s-borde);
+  color: var(--s-texto);
+}
+.btn-suave:hover {
+  background: var(--s-primario-suave);
+  color: var(--s-primario);
+  border-color: transparent;
+}
+.btn-icono {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 9px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--s-texto-2);
+}
+.btn-icono:hover {
+  background: var(--s-superficie-2);
+  border-color: var(--s-borde);
+  color: var(--s-primario);
+}
+.btn-icono.peligro:hover {
+  color: var(--s-peligro);
+  background: var(--s-peligro-suave);
+}
+
+/* ---------- Formularios ---------- */
+.form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--s-texto-2);
+  margin-bottom: 0.35rem;
+}
+.form-control,
+.form-select {
+  background-color: var(--s-superficie);
+  border-color: var(--s-borde);
+  color: var(--s-texto);
+  padding: 0.6rem 0.85rem;
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--s-acento);
+  box-shadow: 0 0 0 4px var(--bs-focus-ring-color);
+  background-color: var(--s-superficie);
+  color: var(--s-texto);
+}
+.form-control::placeholder {
+  color: var(--s-texto-3);
+}
+.campo-error {
+  font-size: 0.8rem;
+  color: var(--s-peligro);
+  margin-top: 0.3rem;
+}
+.buscador {
+  position: relative;
+}
+.buscador > i {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--s-texto-3);
+  pointer-events: none;
+}
+.buscador .form-control {
+  padding-left: 2.5rem;
+}
+.buscador .spinner-border {
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  margin-top: -0.5rem;
+}
+
+/* ---------- Avisos ---------- */
+.aviso {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 0.9rem 1rem;
+  border-radius: var(--s-radio-sm);
+  font-size: 0.92rem;
+}
+.aviso i {
+  font-size: 1.1rem;
+  line-height: 1.3;
+}
+
+/* ---------- Estados vacíos y carga ---------- */
+.estado-vacio {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: var(--s-texto-2);
+}
+.estado-vacio .icono {
+  display: inline-grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 1rem;
+  border-radius: 18px;
+  font-size: 1.75rem;
+  background: var(--s-primario-suave);
+  color: var(--s-primario);
+}
+.estado-vacio h3 {
+  font-size: 1.05rem;
+  margin-bottom: 0.35rem;
+}
+.esqueleto {
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    var(--s-superficie-2) 25%,
+    var(--s-borde) 37%,
+    var(--s-superficie-2) 63%
+  );
+  background-size: 400% 100%;
+  animation: brillo 1.3s ease infinite;
+}
+@keyframes brillo {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+/* ---------- Avatar ---------- */
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #1e3a8a, #6366f1);
+  flex-shrink: 0;
+}
+
+/* ---------- Ventana modal propia (sin JavaScript de Bootstrap) ---------- */
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(2px);
+  animation: aparecer 0.15s ease;
+}
+.modal-caja {
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  background: var(--s-superficie);
+  border: 1px solid var(--s-borde);
+  border-radius: var(--s-radio);
+  box-shadow: var(--s-sombra-alta);
+  animation: subir 0.18s ease;
+}
+.modal-caja-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid var(--s-borde);
+}
+.modal-caja-cabecera h2 {
+  font-size: 1.1rem;
+  margin: 0;
+}
+.modal-caja-cuerpo {
+  padding: 1.25rem 1.5rem;
+}
+.modal-caja-pie {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--s-borde);
+  background: var(--s-superficie-2);
+  border-radius: 0 0 var(--s-radio) var(--s-radio);
+}
+@keyframes aparecer {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes subir {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+/* ---------- Avisos flotantes (toasts) ---------- */
+.toasts {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 1100;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-width: min(380px, calc(100vw - 2.5rem));
+}
+.toast-siult {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--s-radio-sm);
+  background: var(--s-superficie);
+  border: 1px solid var(--s-borde);
+  border-left: 4px solid var(--s-primario);
+  box-shadow: var(--s-sombra-alta);
+  font-size: 0.9rem;
+  animation: subir 0.2s ease;
+}
+.toast-siult.exito {
+  border-left-color: var(--s-exito);
+}
+.toast-siult.error {
+  border-left-color: var(--s-peligro);
+}
+.toast-siult.aviso-t {
+  border-left-color: var(--s-alerta);
+}
+
+/* Utilidad para centrar contenido de carga */
+.centrado {
+  display: grid;
+  place-items: center;
+  min-height: 40vh;
+}
+
+/* Color de una nota segun su rango (data-tono lo calcula tonoNota en core/funcional/notas.ts) */
+.texto-nota[data-tono='exito'] {
+  color: var(--s-exito);
+}
+.texto-nota[data-tono='alerta'] {
+  color: var(--s-alerta);
+}
+.texto-nota[data-tono='peligro'] {
+  color: var(--s-peligro);
+}
+
+/* Tabla compacta para tarjetas angostas */
+.tabla.compacta th,
+.tabla.compacta td {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
