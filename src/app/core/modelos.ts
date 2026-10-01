@@ -111,12 +111,21 @@ export interface PromedioEstudiante {
   readonly aprueba: boolean;
 }
 
+// Viene del microservicio de notificaciones (MongoDB): el id es un ObjectId en texto
 export interface Notificacion {
-  readonly id: number;
+  readonly id: string;
+  readonly tipo: string;
   readonly mensaje: string;
   readonly id_tarea: number;
+  readonly id_materia: number | null;
   readonly fecha: string;
-  readonly leido: boolean;
+  readonly leida: boolean;
+}
+
+export interface Festivo {
+  readonly fecha: string;
+  readonly festivo: boolean;
+  readonly nombre: string | null;
 }
 
 export interface Salud {

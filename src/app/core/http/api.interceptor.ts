@@ -27,7 +27,8 @@ const esTransitorio = (error: unknown): boolean =>
  *  - Si la API responde 401 (sesion vencida), limpio la sesion y llevo al login.
  */
 export const apiInterceptor: HttpInterceptorFn = (peticion, siguiente) => {
-  if (!peticion.url.startsWith(environment.apiUrl)) {
+  // Aplica a todo lo que pasa por el API Gateway: API PHP y microservicios
+  if (!peticion.url.startsWith(environment.gatewayUrl)) {
     return siguiente(peticion);
   }
   const sesion = inject(SesionService);

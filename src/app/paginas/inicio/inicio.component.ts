@@ -1,14 +1,14 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { forkJoin } from 'rxjs';
+import { catchError, forkJoin, of } from 'rxjs';
 import { EstadoVacioComponent } from '../../compartido/estado-vacio.component';
 import { InsigniaComponent } from '../../compartido/insignia.component';
 import { aFecha, fechaCorta, relativo, relativoDesdeTexto } from '../../core/fechas';
 import { distribucion, resumen, tonoNota } from '../../core/funcional/notas';
 import { ErrorApi, Resultado, aResultado } from '../../core/funcional/resultado';
-import { ApiService } from '../../core/http/api.service';
 import { Materia, Notificacion, Tarea } from '../../core/modelos';
 import { MateriasService } from '../../core/servicios/materias.service';
+import { NotificacionesService } from '../../core/servicios/microservicios.service';
 import { SesionService } from '../../core/servicios/sesion.service';
 import { TareasService } from '../../core/servicios/tareas.service';
 
@@ -26,7 +26,6 @@ interface DatosPanel {
 })
 export class InicioComponent {
   protected readonly sesion = inject(SesionService);
-  private readonly api = inject(ApiService);
   protected readonly datos = signal<Resultado<DatosPanel> | null>(null);
   protected readonly fechaCorta = fechaCorta;
   protected readonly relativoTexto = relativoDesdeTexto;
@@ -75,10 +74,14 @@ export class InicioComponent {
   constructor() {
     // PARALELISMO: las tres peticiones salen al mismo tiempo y forkJoin espera a que terminen todas.
     // Si fueran en serie, el tiempo total seria la suma de las tres; asi es el de la mas lenta.
+    // Las notificaciones vienen de otro microservicio: si esta caido, muestro el panel igual sin ellas
+    // (catchError -> lista vacia) en lugar de que un solo servicio tumbe toda la pantalla.
     forkJoin({
       materias: inject(MateriasService).listar(),
       tareas: inject(TareasService).listar({ orden: 'fecha_entrega' }),
-      notificaciones: this.api.get<readonly Notificacion[]>('/notificaciones', { limite: 5 }),
+      notificaciones: inject(NotificacionesService)
+        .listar(5)
+        .pipe(catchError(() => of<readonly Notificacion[]>([]))),
     })
       .pipe(aResultado())
       .subscribe((resultado) => this.datos.set(resultado));

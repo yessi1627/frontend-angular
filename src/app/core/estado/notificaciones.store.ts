@@ -12,36 +12,35 @@ import {
   timer,
 } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { ApiService } from '../http/api.service';
 import { Notificacion } from '../modelos';
+import { NotificacionesService } from '../servicios/microservicios.service';
 import { Store } from './store';
 
 interface EstadoNotificaciones {
   readonly lista: readonly Notificacion[];
-  readonly ultimaVista: number;
   readonly sinConexion: boolean;
 }
 
-const CLAVE_VISTAS = 'siult-notificacion-vista';
-
 /**
- * Notificaciones que se actualizan solas (polling reactivo):
+ * Notificaciones que se actualizan solas (polling reactivo) desde el microservicio de notificaciones:
  *  - interval(30 s) + startWith(0): pido las notificaciones al entrar y luego cada 30 segundos.
  *  - switchMap: si una peticion tarda y llega el siguiente tick, cancelo la anterior.
  *  - retry con espera exponencial (1 s, 2 s, 4 s): si falla la red, reintento 3 veces
  *    antes de rendirme en ese ciclo; el siguiente tick vuelve a intentar.
+ *  - Si el microservicio esta caido, la campana muestra "Reintentando…" y el resto de la
+ *    aplicacion sigue funcionando (degradacion controlada).
  */
 @Injectable({ providedIn: 'root' })
 export class NotificacionesStore extends Store<EstadoNotificaciones> {
-  private readonly api = inject(ApiService);
+  private readonly servicio = inject(NotificacionesService);
   private suscripcion: Subscription | null = null;
 
   readonly lista$ = this.seleccionar((e) => e.lista);
   readonly sinConexion$ = this.seleccionar((e) => e.sinConexion);
-  readonly noVistas$ = this.seleccionar((e) => e.lista.filter((n) => n.id > e.ultimaVista).length);
+  readonly noVistas$ = this.seleccionar((e) => e.lista.filter((n) => !n.leida).length);
 
   constructor() {
-    super({ lista: [], ultimaVista: NotificacionesStore.leerUltimaVista(), sinConexion: false });
+    super({ lista: [], sinConexion: false });
   }
 
   iniciar(): void {
@@ -60,21 +59,18 @@ export class NotificacionesStore extends Store<EstadoNotificaciones> {
     this.actualizar({ lista: [] });
   }
 
+  // Marco como leidas en la vista de inmediato (estado nuevo, sin mutar) y luego aviso al microservicio
   marcarVistas(): void {
-    const mayor = this.estado.lista.reduce(
-      (max, n) => Math.max(max, n.id),
-      this.estado.ultimaVista,
-    );
-    this.actualizar({ ultimaVista: mayor });
-    try {
-      localStorage.setItem(CLAVE_VISTAS, String(mayor));
-    } catch {
-      // sin localStorage solo se pierde el contador al recargar
-    }
+    if (this.estado.lista.every((n) => n.leida)) return;
+    this.actualizar((anterior) => ({ lista: anterior.lista.map((n) => ({ ...n, leida: true })) }));
+    this.servicio
+      .marcarTodasLeidas()
+      .pipe(catchError(() => EMPTY))
+      .subscribe();
   }
 
   private pedir(): Observable<readonly Notificacion[]> {
-    return this.api.get<readonly Notificacion[]>('/notificaciones', { limite: 15 }).pipe(
+    return this.servicio.listar(15).pipe(
       retry({ count: 3, delay: (_error, intento) => timer(1000 * 2 ** (intento - 1)) }),
       catchError(() => {
         this.actualizar({ sinConexion: true });
@@ -82,13 +78,5 @@ export class NotificacionesStore extends Store<EstadoNotificaciones> {
       }),
       tap(() => this.estado.sinConexion && this.actualizar({ sinConexion: false })),
     );
-  }
-
-  private static leerUltimaVista(): number {
-    try {
-      return Number(localStorage.getItem(CLAVE_VISTAS) ?? 0) || 0;
-    } catch {
-      return 0;
-    }
   }
 }
