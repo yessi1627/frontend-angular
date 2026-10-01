@@ -1,0 +1,95 @@
+<div class="login">
+  <section class="panel-marca" aria-hidden="true">
+    <div class="marca">
+      <span class="marca-logo"><i class="bi bi-mortarboard-fill"></i></span>
+      <strong>SIULT</strong>
+    </div>
+    <div class="mensaje">
+      <h2>Tu vida académica, organizada en un solo lugar.</h2>
+      <p>Tareas, entregas, calificaciones y matrículas con avisos en tiempo real.</p>
+      <ul>
+        <li><i class="bi bi-lightning-charge"></i> Búsqueda instantánea de tareas</li>
+        <li><i class="bi bi-bell"></i> Notificaciones automáticas</li>
+        <li><i class="bi bi-graph-up-arrow"></i> Promedios y seguimiento de notas</li>
+      </ul>
+    </div>
+    <small>Universidad Libre · Ingeniería de Sistemas</small>
+  </section>
+
+  <section class="panel-formulario">
+    <button
+      type="button"
+      class="btn btn-icono tema"
+      (click)="tema.alternar()"
+      aria-label="Cambiar tema"
+    >
+      <i class="bi fs-5" [class]="tema.tema() === 'oscuro' ? 'bi bi-sun' : 'bi bi-moon-stars'"></i>
+    </button>
+
+    <form class="formulario" [formGroup]="formulario" (ngSubmit)="ingresar()" novalidate>
+      <h1>Bienvenido de nuevo</h1>
+      <p class="texto-2 mb-4">Ingrese con su correo institucional para continuar.</p>
+
+      @if (error()) {
+        <div class="aviso tono-peligro mb-3" role="alert">
+          <i class="bi bi-exclamation-circle"></i>
+          <span>{{ error() }}</span>
+        </div>
+      }
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Correo electrónico</label>
+        <input
+          id="email"
+          type="email"
+          class="form-control"
+          formControlName="email"
+          placeholder="nombre@correo.com"
+          autocomplete="email"
+          [class.is-invalid]="
+            formulario.controls.email.touched && formulario.controls.email.invalid
+          "
+        />
+        @if (formulario.controls.email.touched && formulario.controls.email.invalid) {
+          <div class="campo-error">Escriba un correo válido.</div>
+        }
+      </div>
+
+      <div class="mb-4">
+        <label for="password" class="form-label">Contraseña</label>
+        <div class="position-relative">
+          <input
+            id="password"
+            [type]="verClave() ? 'text' : 'password'"
+            class="form-control pe-5"
+            formControlName="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            [class.is-invalid]="
+              formulario.controls.password.touched && formulario.controls.password.invalid
+            "
+          />
+          <button
+            type="button"
+            class="ver-clave"
+            (click)="verClave.set(!verClave())"
+            [attr.aria-label]="verClave() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+          >
+            <i class="bi" [class]="verClave() ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+          </button>
+        </div>
+        @if (formulario.controls.password.touched && formulario.controls.password.invalid) {
+          <div class="campo-error">La contraseña es obligatoria.</div>
+        }
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 py-2" [disabled]="enviando()">
+        @if (enviando()) {
+          <span class="spinner-border spinner-border-sm"></span> Ingresando…
+        } @else {
+          Ingresar <i class="bi bi-arrow-right"></i>
+        }
+      </button>
+    </form>
+  </section>
+</div>

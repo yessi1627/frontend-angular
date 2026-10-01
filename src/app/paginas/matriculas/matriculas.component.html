@@ -1,0 +1,113 @@
+<div class="pagina-encabezado">
+  <div>
+    <h1>Matrículas</h1>
+    <p>
+      Inscriba estudiantes en las materias. Todas las materias elegidas se guardan juntas o ninguna.
+    </p>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-xl-5">
+    <div class="tarjeta">
+      <div class="tarjeta-titulo">
+        <h2><i class="bi bi-person-plus me-2 texto-3"></i>Nueva matrícula</h2>
+      </div>
+      <div class="tarjeta-cuerpo">
+        <label class="form-label" for="estudiante">Estudiante</label>
+        <select
+          id="estudiante"
+          class="form-select mb-4"
+          (change)="elegirEstudiante($any($event.target).value)"
+        >
+          <option value="">Seleccione un estudiante…</option>
+          @for (e of estudiantes(); track e.id) {
+            <option [value]="e.id">{{ e.nombres }} · {{ e.email }}</option>
+          }
+        </select>
+
+        <span class="form-label d-block">Materias</span>
+        <div class="opciones">
+          @for (m of materias(); track m.id) {
+            @let inscrito = yaMatriculado().has(m.id);
+            <label
+              class="opcion"
+              [class.marcada]="seleccion().has(m.id)"
+              [class.inscrita]="inscrito"
+            >
+              <input
+                type="checkbox"
+                class="form-check-input"
+                [checked]="seleccion().has(m.id) || inscrito"
+                [disabled]="!estudiante() || inscrito"
+                (change)="alternar(m.id)"
+              />
+              <span class="flex-grow-1">{{ m.nombre }}</span>
+              @if (inscrito) {
+                <small class="texto-3">inscrito</small>
+              }
+            </label>
+          } @empty {
+            <p class="texto-2">No hay materias activas.</p>
+          }
+        </div>
+
+        <button
+          type="button"
+          class="btn btn-primary w-100 mt-4"
+          [disabled]="!estudiante() || seleccion().size === 0 || guardando()"
+          (click)="matricular()"
+        >
+          @if (guardando()) {
+            <span class="spinner-border spinner-border-sm"></span>
+          } @else {
+            <i class="bi bi-check2-circle"></i>
+          }
+          Matricular en {{ seleccion().size }} materia(s)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-7">
+    <div class="tarjeta">
+      <div class="tarjeta-titulo">
+        <h2>{{ estudiante() ? 'Materias del estudiante' : 'Matrículas registradas' }}</h2>
+        <span class="small texto-3">{{ visibles().length }} registro(s)</span>
+      </div>
+      @if (!resultado()) {
+        <app-cargando-filas />
+      } @else {
+        <div class="tabla-scroll">
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th>Estudiante</th>
+                <th>Materia</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (m of visibles(); track m.id) {
+                <tr>
+                  <td>
+                    <strong class="d-block">{{ m.estudiante?.nombres }}</strong
+                    ><small class="texto-3">{{ m.estudiante?.email }}</small>
+                  </td>
+                  <td>{{ m.materia?.nombre }}</td>
+                  <td class="texto-2 small text-nowrap">{{ relativo(m.fecha) }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3">
+                    <app-estado-vacio icono="person-check" titulo="Sin matrículas" />
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,94 @@
+.materia {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  background: var(--s-primario-suave);
+  color: var(--s-primario);
+}
+.descripcion {
+  white-space: pre-line;
+  line-height: 1.7;
+  color: var(--s-texto);
+}
+.adjunto {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 10px;
+  border: 1px dashed var(--s-borde);
+  text-decoration: none;
+}
+.dato {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+.dato > i {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: var(--s-primario-suave);
+  color: var(--s-primario);
+  font-size: 1.1rem;
+}
+.dato small {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--s-texto-3);
+}
+.dato.cerrada > i {
+  background: var(--s-peligro-suave);
+  color: var(--s-peligro);
+}
+.min-w-0 {
+  min-width: 0;
+}
+.archivo-entregado {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  background: var(--s-superficie-2);
+  border: 1px solid var(--s-borde);
+}
+.zona-archivo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 2rem 1rem;
+  border-radius: 14px;
+  cursor: pointer;
+  border: 2px dashed var(--s-borde);
+  text-align: center;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+.zona-archivo:hover,
+.zona-archivo.con-archivo {
+  border-color: var(--s-acento);
+  background: var(--s-primario-suave);
+}
+.zona-archivo i {
+  font-size: 2rem;
+  color: var(--s-primario);
+}
+.zona-archivo small {
+  color: var(--s-texto-3);
+}
+.nota-grande {
+  font-size: 3.2rem;
+  font-weight: 700;
+  line-height: 1;
+  margin-top: 0.5rem;
+}
+.observacion {
+  font-style: italic;
+  color: var(--s-texto-2);
+}

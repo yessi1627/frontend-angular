@@ -1,0 +1,252 @@
+@if (resultado(); as r) {
+  @if (errorDe(r); as mensaje) {
+    <div class="tarjeta">
+      <app-estado-vacio icono="journal-x" titulo="No se pudo abrir la tarea" [texto]="mensaje">
+        <a routerLink="/tareas" class="btn btn-suave btn-sm">Volver a tareas</a>
+      </app-estado-vacio>
+    </div>
+  }
+}
+
+@if (tarea(); as t) {
+  <div class="migas"><a routerLink="/tareas">Tareas</a> / {{ t.titulo }}</div>
+  <div class="pagina-encabezado">
+    <div>
+      <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+        <span class="materia">{{ t.materia?.nombre }}</span>
+        <app-insignia [texto]="t.estado" />
+      </div>
+      <h1>{{ t.titulo }}</h1>
+    </div>
+    @if (!esEstudiante()) {
+      <div class="d-flex gap-2">
+        <a [routerLink]="['/tareas', t.id, 'editar']" class="btn btn-suave"
+          ><i class="bi bi-pencil"></i> Editar</a
+        >
+        <button type="button" class="btn btn-suave text-danger" (click)="eliminar(t)">
+          <i class="bi bi-trash"></i> Eliminar
+        </button>
+      </div>
+    }
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-lg-8">
+      <div class="tarjeta h-100">
+        <div class="tarjeta-titulo"><h2>Descripción</h2></div>
+        <div class="tarjeta-cuerpo">
+          <p class="descripcion mb-0">{{ t.descripcion }}</p>
+          @if (t.archivo) {
+            <a
+              class="adjunto mt-4"
+              [href]="uploads + '/' + t.archivo"
+              target="_blank"
+              rel="noopener"
+            >
+              <i class="bi bi-paperclip"></i> Material adjunto por el profesor
+            </a>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4">
+      <div class="tarjeta h-100 tarjeta-cuerpo d-flex flex-column gap-3">
+        <div class="dato">
+          <i class="bi bi-calendar3"></i>
+          <div>
+            <small>Fecha de entrega</small><strong>{{ fechaLarga(t.fecha_entrega) }}</strong>
+          </div>
+        </div>
+        <div class="dato">
+          <i class="bi bi-clock"></i>
+          <div>
+            <small>Hora límite</small><strong>{{ horaCorta(t.hora_entrega) }}</strong>
+          </div>
+        </div>
+        <div class="dato" [class.cerrada]="!abierta()">
+          <i class="bi" [class]="abierta() ? 'bi bi-hourglass-split' : 'bi bi-lock'"></i>
+          <div>
+            <small>{{ abierta() ? 'Cierra' : 'Cerró' }}</small
+            ><strong>{{ vence(t) }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @if (esEstudiante()) {
+    <div class="row g-3">
+      <div class="col-lg-8">
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">
+            <h2>Mi entrega</h2>
+            @if (t.estado_entrega) {
+              <app-insignia [texto]="t.estado_entrega" />
+            }
+          </div>
+          <div class="tarjeta-cuerpo">
+            @if (t.mi_entrega; as e) {
+              <div class="archivo-entregado mb-3">
+                <span class="indicador-icono tono-exito"
+                  ><i class="bi bi-file-earmark-check"></i
+                ></span>
+                <div class="flex-grow-1 min-w-0">
+                  <strong class="d-block text-truncate">{{
+                    e.nombre_original ?? 'Archivo entregado'
+                  }}</strong>
+                  <small class="texto-2">Entregado {{ relativoTexto(e.fecha) }}</small>
+                </div>
+                <a
+                  class="btn btn-suave btn-sm"
+                  [href]="uploads + '/' + e.archivo"
+                  target="_blank"
+                  rel="noopener"
+                  ><i class="bi bi-download"></i> Ver</a
+                >
+              </div>
+            }
+            @if (abierta()) {
+              <label class="zona-archivo" [class.con-archivo]="archivoElegido()">
+                <input
+                  type="file"
+                  accept=".pdf,.docx,.jpg,.jpeg,.png,.zip"
+                  (change)="elegirArchivo($event)"
+                  hidden
+                />
+                <i class="bi bi-cloud-arrow-up"></i>
+                @if (archivoElegido(); as a) {
+                  <strong>{{ a.name }}</strong>
+                  <small>{{ (a.size / 1024).toFixed(0) }} KB · haz clic para cambiarlo</small>
+                } @else {
+                  <strong>{{
+                    t.mi_entrega ? 'Reemplazar mi entrega' : 'Selecciona el archivo de tu entrega'
+                  }}</strong>
+                  <small>PDF, DOCX, JPG, PNG o ZIP · máximo 5 MB</small>
+                }
+              </label>
+              <div class="d-flex justify-content-end mt-3">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  [disabled]="!archivoElegido() || subiendo()"
+                  (click)="entregar()"
+                >
+                  @if (subiendo()) {
+                    <span class="spinner-border spinner-border-sm"></span> Subiendo…
+                  } @else {
+                    <i class="bi bi-send"></i> Entregar
+                  }
+                </button>
+              </div>
+            } @else if (!t.mi_entrega) {
+              <div class="aviso tono-peligro">
+                <i class="bi bi-lock"></i
+                ><span>La fecha y hora de entrega ya pasaron; no es posible entregar.</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="tarjeta tarjeta-cuerpo text-center h-100">
+          <small class="texto-2 d-block mb-2">Mi calificación</small>
+          @if (t.mi_calificacion; as c) {
+            <div class="nota-grande texto-nota" [attr.data-tono]="tonoNota(c.nota)">
+              {{ c.nota.toFixed(1) }}
+            </div>
+            <small class="texto-3">sobre 5.0</small>
+            @if (c.observacion) {
+              <p class="observacion mt-3 mb-0">“{{ c.observacion }}”</p>
+            }
+          } @else {
+            <div class="nota-grande texto-3">—</div>
+            <small class="texto-3">Aún sin calificar</small>
+          }
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="tarjeta">
+      <div class="tarjeta-titulo flex-wrap">
+        <h2>Estudiantes y calificaciones</h2>
+        <div class="d-flex gap-3 small texto-2">
+          <span><i class="bi bi-people"></i> {{ t.estudiantes?.length ?? 0 }} matriculados</span>
+          <span><i class="bi bi-file-earmark-check"></i> {{ entregados() }} entregas</span>
+          <span
+            ><i class="bi bi-calculator"></i> Promedio {{ resumenCurso().promedio ?? '—' }}</span
+          >
+        </div>
+      </div>
+      <div class="tabla-scroll">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Estudiante</th>
+              <th>Entrega</th>
+              <th>Nota</th>
+              <th>Calificar</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (e of t.estudiantes ?? []; track e.id) {
+              <tr>
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="avatar">{{ e.nombres.slice(0, 2).toUpperCase() }}</span>
+                    <div>
+                      <strong class="d-block">{{ e.nombres }}</strong
+                      ><small class="texto-3">{{ e.email }}</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  @if (e.entrega; as en) {
+                    <a
+                      [href]="uploads + '/' + en.archivo"
+                      target="_blank"
+                      rel="noopener"
+                      class="small"
+                      ><i class="bi bi-file-earmark-arrow-down"></i> Ver entrega</a
+                    >
+                    <small class="d-block texto-3">{{ relativoTexto(en.fecha) }}</small>
+                  } @else {
+                    <app-insignia [texto]="e.estado_entrega" />
+                  }
+                </td>
+                <td>
+                  @if (notas().get(e.id); as c) {
+                    <strong class="texto-nota fs-6" [attr.data-tono]="tonoNota(c.nota)">{{
+                      c.nota.toFixed(1)
+                    }}</strong>
+                  } @else {
+                    <span class="texto-3">—</span>
+                  }
+                </td>
+                <td>
+                  <app-calificar
+                    [idTarea]="t.id"
+                    [idUsuario]="e.id"
+                    [actual]="notas().get(e.id) ?? e.calificacion"
+                  />
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="4">
+                  <app-estado-vacio
+                    icono="people"
+                    titulo="Sin estudiantes matriculados"
+                    texto="Matricule estudiantes en esta materia para calificarlos."
+                  />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+} @else if (!resultado()) {
+  <div class="esqueleto mb-3" style="height: 40px; width: 40%"></div>
+  <div class="tarjeta esqueleto" style="height: 260px"></div>
+}

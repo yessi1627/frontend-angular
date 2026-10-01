@@ -1,0 +1,110 @@
+<div class="pagina-encabezado">
+  <div>
+    <h1>Materias</h1>
+    <p>
+      {{
+        esAdmin()
+          ? 'Administre las materias del programa.'
+          : 'Materias disponibles y cantidad de tareas.'
+      }}
+    </p>
+  </div>
+  @if (esAdmin()) {
+    <button type="button" class="btn btn-primary" (click)="abrir('nueva')">
+      <i class="bi bi-plus-lg"></i> Nueva materia
+    </button>
+  }
+</div>
+
+@if (!resultado()) {
+  <div class="tarjeta"><app-cargando-filas /></div>
+} @else {
+  <div class="rejilla">
+    @for (m of materias(); track m.id) {
+      <article class="tarjeta materia">
+        <div class="franja" [style.background]="color(m.id)"></div>
+        <div class="tarjeta-cuerpo">
+          <div class="d-flex align-items-start justify-content-between gap-2">
+            <span class="icono" [style.color]="color(m.id)"><i class="bi bi-book-half"></i></span>
+            @if (esAdmin()) {
+              <div class="d-flex">
+                <button type="button" class="btn btn-icono" title="Editar" (click)="abrir(m)">
+                  <i class="bi bi-pencil"></i>
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-icono peligro"
+                  title="Eliminar"
+                  (click)="eliminar(m)"
+                >
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            }
+          </div>
+          <h2>{{ m.nombre }}</h2>
+          <a class="small text-decoration-none" [routerLink]="['/tareas']">
+            <i class="bi bi-journal-text"></i> {{ m.cantidad_tareas ?? 0 }} tarea(s)
+          </a>
+        </div>
+      </article>
+    } @empty {
+      <div class="tarjeta" style="grid-column: 1 / -1">
+        <app-estado-vacio
+          icono="book"
+          titulo="No hay materias"
+          [texto]="
+            esAdmin()
+              ? 'Cree la primera materia del programa.'
+              : 'Aún no estás matriculado en ninguna materia.'
+          "
+        />
+      </div>
+    }
+  </div>
+}
+
+@if (editando(); as actual) {
+  <div class="modal-fondo" (click)="editando.set(null)">
+    <form
+      class="modal-caja"
+      (click)="$event.stopPropagation()"
+      (ngSubmit)="guardar()"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="modal-caja-cabecera">
+        <h2>{{ actual === 'nueva' ? 'Nueva materia' : 'Editar materia' }}</h2>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Cerrar"
+          (click)="editando.set(null)"
+        ></button>
+      </div>
+      <div class="modal-caja-cuerpo">
+        <label class="form-label" for="nombre">Nombre de la materia</label>
+        <input
+          id="nombre"
+          name="nombre"
+          class="form-control"
+          [ngModel]="nombre()"
+          (ngModelChange)="nombre.set($event)"
+          placeholder="Ej. Programación II"
+          required
+          maxlength="255"
+          autofocus
+        />
+      </div>
+      <div class="modal-caja-pie">
+        <button type="button" class="btn btn-suave" (click)="editando.set(null)">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="!nombre().trim() || guardando()">
+          @if (guardando()) {
+            <span class="spinner-border spinner-border-sm"></span>
+          }
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>
+}

@@ -1,0 +1,31 @@
+.medidor {
+  height: 8px;
+  border-radius: 99px;
+  background: var(--s-superficie-2);
+  overflow: hidden;
+}
+.medidor span {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--s-primario);
+  transition: width 0.4s ease;
+}
+.medidor span[data-tono='exito'] {
+  background: var(--s-exito);
+}
+.medidor span[data-tono='alerta'] {
+  background: var(--s-alerta);
+}
+.medidor span[data-tono='peligro'] {
+  background: var(--s-peligro);
+}
+.nota-pastilla {
+  display: inline-block;
+  min-width: 46px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 700;
+  background: var(--s-superficie-2);
+}

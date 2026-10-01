@@ -1,0 +1,207 @@
+<div class="pagina-encabezado">
+  <div>
+    <h1>Usuarios</h1>
+    <p>Administre las cuentas de administradores, profesores y estudiantes.</p>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="abrir('nuevo')">
+    <i class="bi bi-person-plus"></i> Nuevo usuario
+  </button>
+</div>
+
+<div class="tarjeta">
+  <div class="d-flex flex-wrap gap-2 p-3 px-4 border-bottom">
+    <div class="buscador flex-grow-1">
+      <i class="bi bi-search"></i>
+      <input
+        type="search"
+        class="form-control"
+        placeholder="Buscar por nombre o correo…"
+        [value]="filtroTexto()"
+        (input)="filtroTexto.set($any($event.target).value)"
+        aria-label="Buscar usuarios"
+      />
+    </div>
+    <select
+      class="form-select"
+      style="width: auto"
+      [value]="filtroRol()"
+      (change)="filtroRol.set($any($event.target).value)"
+      aria-label="Filtrar por rol"
+    >
+      <option value="">Todos los roles</option>
+      @for (r of roles(); track r.id) {
+        <option [value]="r.nombre">{{ r.nombre }}</option>
+      }
+    </select>
+  </div>
+
+  @if (!resultado()) {
+    <app-cargando-filas [filas]="5" />
+  } @else {
+    <div class="tabla-scroll">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Correo</th>
+            <th>Rol</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of usuarios(); track u.id) {
+            <tr>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <span class="avatar">{{ iniciales(u.nombres) }}</span>
+                  <strong>{{ u.nombres }}</strong>
+                  @if (u.id === sesion.usuario()?.id) {
+                    <small class="texto-3">(usted)</small>
+                  }
+                </div>
+              </td>
+              <td class="texto-2">{{ u.email }}</td>
+              <td>
+                @if (u.rol) {
+                  <app-insignia [texto]="u.rol.nombre" />
+                }
+              </td>
+              <td>
+                <div class="tabla-acciones">
+                  <button type="button" class="btn btn-icono" title="Editar" (click)="abrir(u)">
+                    <i class="bi bi-pencil"></i>
+                  </button>
+                  @if (u.id !== sesion.usuario()?.id) {
+                    <button
+                      type="button"
+                      class="btn btn-icono peligro"
+                      title="Eliminar"
+                      (click)="eliminar(u)"
+                    >
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="4">
+                <app-estado-vacio icono="people" titulo="No hay usuarios que coincidan" />
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
+
+@if (editando(); as actual) {
+  <div class="modal-fondo" (click)="editando.set(null)">
+    <form
+      class="modal-caja"
+      [formGroup]="formulario"
+      (click)="$event.stopPropagation()"
+      (ngSubmit)="guardar()"
+      novalidate
+      role="dialog"
+      aria-modal="true"
+    >
+      <div class="modal-caja-cabecera">
+        <h2>{{ actual === 'nuevo' ? 'Nuevo usuario' : 'Editar usuario' }}</h2>
+        <button
+          type="button"
+          class="btn-close"
+          aria-label="Cerrar"
+          (click)="editando.set(null)"
+        ></button>
+      </div>
+      <div class="modal-caja-cuerpo">
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label" for="u-nombres">Nombre completo</label>
+            <input
+              id="u-nombres"
+              class="form-control"
+              formControlName="nombres"
+              [class.is-invalid]="
+                formulario.controls.nombres.touched && formulario.controls.nombres.invalid
+              "
+            />
+          </div>
+          <div class="col-md-7">
+            <label class="form-label" for="u-email">Correo electrónico</label>
+            <input
+              id="u-email"
+              type="email"
+              class="form-control"
+              formControlName="email"
+              [class.is-invalid]="
+                (formulario.controls.email.touched && formulario.controls.email.invalid) ||
+                erroresApi()['email']
+              "
+            />
+            @if (erroresApi()['email']) {
+              <div class="campo-error">{{ erroresApi()['email'] }}</div>
+            }
+          </div>
+          <div class="col-md-5">
+            <label class="form-label" for="u-rol">Rol</label>
+            <select
+              id="u-rol"
+              class="form-select"
+              formControlName="rol_id"
+              [class.is-invalid]="
+                formulario.controls.rol_id.touched && formulario.controls.rol_id.invalid
+              "
+            >
+              <option [ngValue]="0" disabled>Seleccione…</option>
+              @for (r of roles(); track r.id) {
+                <option [ngValue]="r.id">{{ r.nombre }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="u-clave">Contraseña</label>
+            <input
+              id="u-clave"
+              type="password"
+              class="form-control"
+              formControlName="password"
+              autocomplete="new-password"
+              [placeholder]="actual === 'nuevo' ? '' : 'Dejar vacía para no cambiar'"
+              [class.is-invalid]="erroresApi()['password']"
+            />
+            @if (erroresApi()['password']) {
+              <div class="campo-error">{{ erroresApi()['password'] }}</div>
+            }
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="u-clave2">Confirmar contraseña</label>
+            <input
+              id="u-clave2"
+              type="password"
+              class="form-control"
+              formControlName="password_confirmacion"
+              autocomplete="new-password"
+              [class.is-invalid]="erroresApi()['password_confirmacion']"
+            />
+            @if (erroresApi()['password_confirmacion']) {
+              <div class="campo-error">{{ erroresApi()['password_confirmacion'] }}</div>
+            }
+          </div>
+        </div>
+      </div>
+      <div class="modal-caja-pie">
+        <button type="button" class="btn btn-suave" (click)="editando.set(null)">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="guardando()">
+          @if (guardando()) {
+            <span class="spinner-border spinner-border-sm"></span>
+          }
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>
+}

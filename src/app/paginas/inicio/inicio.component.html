@@ -1,0 +1,241 @@
+<div class="pagina-encabezado">
+  <div>
+    <h1>{{ saludo() }} 👋</h1>
+    <p>
+      @if (esEstudiante()) {
+        Este es el resumen de tus tareas y calificaciones.
+      } @else {
+        Este es el resumen académico del sistema.
+      }
+    </p>
+  </div>
+  @if (!esEstudiante()) {
+    <a routerLink="/tareas/nueva" class="btn btn-primary"
+      ><i class="bi bi-plus-lg"></i> Nueva tarea</a
+    >
+  }
+</div>
+
+@if (datos(); as r) {
+  @if (error(r); as e) {
+    <div class="tarjeta">
+      <app-estado-vacio
+        icono="cloud-slash"
+        titulo="No pudimos cargar el panel"
+        [texto]="e.mensaje"
+      />
+    </div>
+  }
+} @else {
+  <div class="row g-3 mb-4">
+    @for (i of [1, 2, 3, 4]; track i) {
+      <div class="col-sm-6 col-xl-3">
+        <div class="tarjeta esqueleto" style="height: 92px"></div>
+      </div>
+    }
+  </div>
+  <div class="tarjeta esqueleto" style="height: 300px"></div>
+}
+
+@if (panel(); as p) {
+  <div class="row g-3 mb-4">
+    @if (esEstudiante()) {
+      <div class="col-sm-6 col-xl-3">
+        <div class="tarjeta indicador">
+          <span class="indicador-icono tono-alerta"><i class="bi bi-hourglass-split"></i></span>
+          <div>
+            <div class="indicador-valor">{{ p.porEntregar }}</div>
+            <div class="indicador-etiqueta">Por entregar</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="tarjeta indicador">
+          <span class="indicador-icono tono-exito"><i class="bi bi-check2-circle"></i></span>
+          <div>
+            <div class="indicador-valor">{{ p.entregadas }}</div>
+            <div class="indicador-etiqueta">Entregadas</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="tarjeta indicador">
+          <span class="indicador-icono tono-primario"><i class="bi bi-book"></i></span>
+          <div>
+            <div class="indicador-valor">{{ p.materias }}</div>
+            <div class="indicador-etiqueta">Materias matriculadas</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="tarjeta indicador">
+          <span class="indicador-icono tono-info"><i class="bi bi-award"></i></span>
+          <div>
+            <div class="indicador-valor">{{ p.resumenNotas.promedio ?? '—' }}</div>
+            <div class="indicador-etiqueta">Promedio general</div>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="col-sm-6 col-xl-3">
+        <div class="tarjeta indicador">
+          <span class="indicador-icono tono-primario"><i class="bi bi-journal-text"></i></span>
+          <div>
+            <div class="indicador-valor">{{ p.totalTareas }}</div>
+            <div class="indicador-etiqueta">Tareas registradas</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="tarjeta indicador">
+          <span class="indicador-icono tono-alerta"><i class="bi bi-hourglass-split"></i></span>
+          <div>
+            <div class="indicador-valor">{{ p.abiertas }}</div>
+            <div class="indicador-etiqueta">Abiertas para entrega</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="tarjeta indicador">
+          <span class="indicador-icono tono-peligro"><i class="bi bi-calendar-x"></i></span>
+          <div>
+            <div class="indicador-valor">{{ p.vencidas }}</div>
+            <div class="indicador-etiqueta">Vencidas</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6 col-xl-3">
+        <div class="tarjeta indicador">
+          <span class="indicador-icono tono-info"><i class="bi bi-book"></i></span>
+          <div>
+            <div class="indicador-valor">{{ p.materias }}</div>
+            <div class="indicador-etiqueta">Materias activas</div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="row g-3">
+    <div class="col-lg-7">
+      <div class="tarjeta h-100">
+        <div class="tarjeta-titulo">
+          <h2><i class="bi bi-calendar-event me-2 texto-3"></i>Próximas entregas</h2>
+          <a routerLink="/tareas" class="small text-decoration-none"
+            >Ver todas <i class="bi bi-arrow-right"></i
+          ></a>
+        </div>
+        @for (t of p.proximas; track t.id) {
+          <a class="fila-tarea" [routerLink]="['/tareas', t.id]">
+            <span class="fecha-bloque" [class.urgente]="urgente(t)">
+              <strong>{{ fechaCorta(t.fecha_entrega).split(' ')[0] }}</strong>
+              <small>{{ fechaCorta(t.fecha_entrega).split(' ')[1] }}</small>
+            </span>
+            <span class="flex-grow-1 min-w-0">
+              <strong class="d-block text-truncate">{{ t.titulo }}</strong>
+              <small class="texto-2">{{ t.materia?.nombre }} · vence {{ tiempoRestante(t) }}</small>
+            </span>
+            @if (t.estado_entrega) {
+              <app-insignia [texto]="t.estado_entrega" />
+            } @else {
+              <app-insignia [texto]="t.estado" />
+            }
+          </a>
+        } @empty {
+          <app-estado-vacio
+            icono="calendar-check"
+            titulo="Sin entregas próximas"
+            texto="No hay tareas abiertas en este momento."
+          />
+        }
+      </div>
+    </div>
+
+    <div class="col-lg-5 d-flex flex-column gap-3">
+      @if (esEstudiante()) {
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">
+            <h2><i class="bi bi-bar-chart me-2 texto-3"></i>Mis notas</h2>
+          </div>
+          <div class="tarjeta-cuerpo">
+            @if (p.resumenNotas.cantidad > 0) {
+              <div class="d-flex justify-content-between mb-3 small texto-2">
+                <span
+                  >Máxima
+                  <strong class="texto-nota" [attr.data-tono]="tonoNota(p.resumenNotas.maxima)">{{
+                    p.resumenNotas.maxima
+                  }}</strong></span
+                >
+                <span
+                  >Mínima
+                  <strong class="texto-nota" [attr.data-tono]="tonoNota(p.resumenNotas.minima)">{{
+                    p.resumenNotas.minima
+                  }}</strong></span
+                >
+                <span
+                  >Aprobadas
+                  <strong
+                    >{{ p.resumenNotas.aprobadas }}/{{ p.resumenNotas.cantidad }}</strong
+                  ></span
+                >
+              </div>
+              <div class="barras">
+                @for (valor of p.distribucion; track $index) {
+                  <div class="barra-col">
+                    <div
+                      class="barra"
+                      [style.height.%]="(valor / p.resumenNotas.cantidad) * 100"
+                      [attr.data-rango]="$index"
+                    ></div>
+                    <small>{{ $index }}–{{ $index + 1 }}</small>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="texto-2 mb-0">Aún no tienes notas registradas.</p>
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="tarjeta">
+          <div class="tarjeta-titulo">
+            <h2><i class="bi bi-bar-chart me-2 texto-3"></i>Tareas por materia</h2>
+          </div>
+          <div class="tarjeta-cuerpo d-flex flex-column gap-3">
+            @for (m of p.materiasConTareas; track m.id) {
+              <div>
+                <div class="d-flex justify-content-between small mb-1">
+                  <span>{{ m.nombre }}</span
+                  ><strong>{{ m.cantidad_tareas }}</strong>
+                </div>
+                <div class="progreso">
+                  <span
+                    [style.width.%]="((m.cantidad_tareas ?? 0) / p.maxTareasMateria) * 100"
+                  ></span>
+                </div>
+              </div>
+            } @empty {
+              <p class="texto-2 mb-0">Todavía no hay tareas creadas.</p>
+            }
+          </div>
+        </div>
+      }
+
+      <div class="tarjeta flex-grow-1">
+        <div class="tarjeta-titulo">
+          <h2><i class="bi bi-bell me-2 texto-3"></i>Actividad reciente</h2>
+        </div>
+        @for (n of p.notificaciones; track n.id) {
+          <a class="fila-tarea" [routerLink]="['/tareas', n.id_tarea]">
+            <span class="punto"></span>
+            <span class="flex-grow-1 small"
+              >{{ n.mensaje }}<br /><span class="texto-3">{{ relativoTexto(n.fecha) }}</span></span
+            >
+          </a>
+        } @empty {
+          <p class="texto-2 p-4 mb-0">Sin actividad reciente.</p>
+        }
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,131 @@
+<div class="pagina-encabezado">
+  <div>
+    <h1>Tareas</h1>
+    <p>
+      {{
+        esEstudiante()
+          ? 'Tareas de las materias en las que estás matriculado.'
+          : 'Gestiona las tareas de todas las materias.'
+      }}
+    </p>
+  </div>
+  @if (!esEstudiante()) {
+    <a routerLink="/tareas/nueva" class="btn btn-primary"
+      ><i class="bi bi-plus-lg"></i> Nueva tarea</a
+    >
+  }
+</div>
+
+<div class="tarjeta">
+  <div class="filtros">
+    <div class="buscador flex-grow-1">
+      <i class="bi bi-search"></i>
+      <input
+        type="search"
+        class="form-control"
+        [formControl]="busqueda"
+        placeholder="Buscar por título, descripción o materia…"
+        aria-label="Buscar tareas"
+      />
+      @if (buscando()) {
+        <span class="spinner-border spinner-border-sm texto-3"></span>
+      }
+    </div>
+    <select class="form-select filtro" [formControl]="materia" aria-label="Filtrar por materia">
+      <option [ngValue]="null">Todas las materias</option>
+      @for (m of materias(); track m.id) {
+        <option [ngValue]="m.id">{{ m.nombre }}</option>
+      }
+    </select>
+    <select class="form-select filtro" [formControl]="orden" aria-label="Ordenar">
+      <option value="fecha_entrega">Ordenar por fecha</option>
+      <option value="titulo">Ordenar por título</option>
+      <option value="estado">Ordenar por estado</option>
+    </select>
+  </div>
+
+  @if (resultado() === undefined) {
+    <app-cargando-filas [filas]="5" />
+  } @else if (error()) {
+    <app-estado-vacio
+      icono="cloud-slash"
+      titulo="No se pudieron cargar las tareas"
+      [texto]="error()!"
+    />
+  } @else {
+    <div class="tabla-scroll">
+      <table class="tabla">
+        <thead>
+          <tr>
+            <th>Tarea</th>
+            <th>Materia</th>
+            <th>Entrega</th>
+            <th>Estado</th>
+            @if (esEstudiante()) {
+              <th>Nota</th>
+            }
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (t of lista(); track t.id) {
+            <tr>
+              <td>
+                <a [routerLink]="['/tareas', t.id]" class="enlace-tarea">{{ t.titulo }}</a>
+                <div class="small texto-3 text-truncate descripcion">{{ t.descripcion }}</div>
+              </td>
+              <td>
+                <span class="materia">{{ t.materia?.nombre }}</span>
+              </td>
+              <td class="text-nowrap">
+                <div>{{ fechaLarga(t.fecha_entrega) }}</div>
+                <small class="texto-3">{{ horaCorta(t.hora_entrega) }} · {{ vence(t) }}</small>
+              </td>
+              <td>
+                <app-insignia
+                  [texto]="esEstudiante() ? (t.estado_entrega ?? t.estado) : t.estado"
+                />
+              </td>
+              @if (esEstudiante()) {
+                <td>
+                  @if (t.mi_calificacion; as c) {
+                    <strong
+                      class="texto-nota"
+                      [attr.data-tono]="c.nota >= 4 ? 'exito' : c.nota >= 3 ? 'alerta' : 'peligro'"
+                      >{{ c.nota.toFixed(1) }}</strong
+                    >
+                  } @else {
+                    <span class="texto-3">—</span>
+                  }
+                </td>
+              }
+              <td>
+                <div class="tabla-acciones">
+                  <a [routerLink]="['/tareas', t.id]" class="btn btn-icono" title="Ver detalle"
+                    ><i class="bi bi-chevron-right"></i
+                  ></a>
+                </div>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6">
+                <app-estado-vacio
+                  icono="search"
+                  titulo="No encontramos tareas"
+                  texto="Pruebe con otra búsqueda o quite los filtros."
+                >
+                  @if (busqueda.value || materia.value) {
+                    <button type="button" class="btn btn-suave btn-sm" (click)="limpiar()">
+                      Limpiar filtros
+                    </button>
+                  }
+                </app-estado-vacio>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

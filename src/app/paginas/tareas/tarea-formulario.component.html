@@ -1,0 +1,125 @@
+<div class="migas"><a routerLink="/tareas">Tareas</a> / {{ editando() ? 'Editar' : 'Nueva' }}</div>
+<div class="pagina-encabezado">
+  <div>
+    <h1>{{ editando() ? 'Editar tarea' : 'Nueva tarea' }}</h1>
+    <p>
+      {{
+        editando()
+          ? 'Actualice los datos de la tarea.'
+          : 'Los estudiantes matriculados recibirán una notificación.'
+      }}
+    </p>
+  </div>
+</div>
+
+<form
+  class="tarjeta"
+  style="max-width: 820px"
+  [formGroup]="formulario"
+  (ngSubmit)="guardar()"
+  novalidate
+  [class.opacity-50]="cargando()"
+>
+  <div class="tarjeta-cuerpo">
+    <div class="row g-3">
+      <div class="col-md-8">
+        <label class="form-label" for="titulo">Título</label>
+        <input
+          id="titulo"
+          class="form-control"
+          formControlName="titulo"
+          placeholder="Ej. Taller de operadores RxJS"
+          [class.is-invalid]="invalido('titulo')"
+        />
+        @if (invalido('titulo')) {
+          <div class="campo-error">{{ erroresApi()['titulo'] ?? 'El título es obligatorio.' }}</div>
+        }
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="materia">Materia</label>
+        <select
+          id="materia"
+          class="form-select"
+          formControlName="id_materia"
+          [class.is-invalid]="invalido('id_materia')"
+        >
+          <option [ngValue]="0" disabled>Seleccione…</option>
+          @for (m of materias(); track m.id) {
+            <option [ngValue]="m.id">{{ m.nombre }}</option>
+          }
+        </select>
+        @if (invalido('id_materia')) {
+          <div class="campo-error">
+            {{ erroresApi()['id_materia'] ?? 'Seleccione una materia.' }}
+          </div>
+        }
+      </div>
+      <div class="col-12">
+        <label class="form-label" for="descripcion">Descripción</label>
+        <textarea
+          id="descripcion"
+          class="form-control"
+          rows="6"
+          formControlName="descripcion"
+          placeholder="Instrucciones, criterios de evaluación y formato de entrega…"
+          [class.is-invalid]="invalido('descripcion')"
+        ></textarea>
+        @if (invalido('descripcion')) {
+          <div class="campo-error">
+            {{ erroresApi()['descripcion'] ?? 'La descripción es obligatoria.' }}
+          </div>
+        }
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="fecha">Fecha de entrega</label>
+        <input
+          id="fecha"
+          type="date"
+          class="form-control"
+          formControlName="fecha_entrega"
+          [min]="editando() ? '' : hoy"
+          [class.is-invalid]="invalido('fecha_entrega')"
+        />
+        @if (invalido('fecha_entrega')) {
+          <div class="campo-error">{{ erroresApi()['fecha_entrega'] ?? 'Indique la fecha.' }}</div>
+        }
+      </div>
+      <div class="col-md-4">
+        <label class="form-label" for="hora">Hora límite</label>
+        <input
+          id="hora"
+          type="time"
+          class="form-control"
+          formControlName="hora_entrega"
+          [class.is-invalid]="invalido('hora_entrega')"
+        />
+        @if (invalido('hora_entrega')) {
+          <div class="campo-error">{{ erroresApi()['hora_entrega'] ?? 'Indique la hora.' }}</div>
+        }
+      </div>
+      @if (editando()) {
+        <div class="col-md-4">
+          <label class="form-label" for="estado">Estado</label>
+          <select id="estado" class="form-select" formControlName="estado">
+            @for (e of estados; track e) {
+              <option [value]="e">{{ e }}</option>
+            }
+          </select>
+        </div>
+      }
+    </div>
+  </div>
+  <div class="modal-caja-pie">
+    <a [routerLink]="editando() ? ['/tareas', id()] : ['/tareas']" class="btn btn-suave"
+      >Cancelar</a
+    >
+    <button type="submit" class="btn btn-primary" [disabled]="guardando() || cargando()">
+      @if (guardando()) {
+        <span class="spinner-border spinner-border-sm"></span>
+      } @else {
+        <i class="bi bi-check-lg"></i>
+      }
+      {{ editando() ? 'Guardar cambios' : 'Crear tarea' }}
+    </button>
+  </div>
+</form>

@@ -1,0 +1,195 @@
+<div class="pagina-encabezado">
+  <div>
+    <h1>{{ esEstudiante() ? 'Mis calificaciones' : 'Calificaciones' }}</h1>
+    <p>
+      {{
+        esEstudiante()
+          ? 'Notas de tus tareas y promedio por materia.'
+          : 'Promedios y notas registradas por los profesores.'
+      }}
+    </p>
+  </div>
+  <select
+    class="form-select"
+    style="width: auto; min-width: 220px"
+    [formControl]="materia"
+    aria-label="Filtrar por materia"
+  >
+    <option [ngValue]="null">Todas las materias</option>
+    @for (m of materias(); track m.id) {
+      <option [ngValue]="m.id">{{ m.nombre }}</option>
+    }
+  </select>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-sm-6 col-xl-3">
+    <div class="tarjeta indicador">
+      <span class="indicador-icono tono-primario"><i class="bi bi-calculator"></i></span>
+      <div>
+        <div class="indicador-valor">{{ resumenGeneral().promedio ?? '—' }}</div>
+        <div class="indicador-etiqueta">Promedio</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="tarjeta indicador">
+      <span class="indicador-icono tono-exito"><i class="bi bi-arrow-up-right"></i></span>
+      <div>
+        <div class="indicador-valor">{{ resumenGeneral().maxima ?? '—' }}</div>
+        <div class="indicador-etiqueta">Nota más alta</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="tarjeta indicador">
+      <span class="indicador-icono tono-peligro"><i class="bi bi-arrow-down-right"></i></span>
+      <div>
+        <div class="indicador-valor">{{ resumenGeneral().minima ?? '—' }}</div>
+        <div class="indicador-etiqueta">Nota más baja</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6 col-xl-3">
+    <div class="tarjeta indicador">
+      <span class="indicador-icono tono-info"><i class="bi bi-check2-all"></i></span>
+      <div>
+        <div class="indicador-valor">
+          {{ resumenGeneral().aprobadas
+          }}<small class="texto-3 fs-6">/{{ resumenGeneral().cantidad }}</small>
+        </div>
+        <div class="indicador-etiqueta">Notas aprobadas (≥ 3.0)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-3">
+  <div class="col-xl-5">
+    <div class="tarjeta h-100">
+      @if (esEstudiante()) {
+        <div class="tarjeta-titulo"><h2>Promedio por materia</h2></div>
+        <div class="tarjeta-cuerpo d-flex flex-column gap-3">
+          @for (m of porMateria(); track m.materia) {
+            <div>
+              <div class="d-flex justify-content-between mb-1">
+                <span
+                  >{{ m.materia }} <small class="texto-3">· {{ m.cantidad }} nota(s)</small></span
+                >
+                <strong class="texto-nota" [attr.data-tono]="tonoNota(m.promedio)">{{
+                  m.promedio
+                }}</strong>
+              </div>
+              <div class="medidor">
+                <span
+                  [style.width.%]="((m.promedio ?? 0) / 5) * 100"
+                  [attr.data-tono]="tonoNota(m.promedio)"
+                ></span>
+              </div>
+            </div>
+          } @empty {
+            <p class="texto-2 mb-0">Aún no tienes notas.</p>
+          }
+        </div>
+      } @else {
+        <div class="tarjeta-titulo"><h2>Promedio por estudiante</h2></div>
+        <div class="tabla-scroll">
+          <table class="tabla compacta">
+            <thead>
+              <tr>
+                <th>Estudiante</th>
+                <th>Notas</th>
+                <th>Promedio</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (p of promedios(); track p.id_usuario) {
+                <tr>
+                  <td>
+                    <strong>{{ p.nombres }}</strong>
+                  </td>
+                  <td class="texto-2">{{ p.cantidad }}</td>
+                  <td>
+                    <strong class="texto-nota" [attr.data-tono]="tonoNota(p.promedio)">{{
+                      p.promedio
+                    }}</strong>
+                  </td>
+                  <td><app-insignia [texto]="p.aprueba ? 'Aprobado' : 'Reprobado'" /></td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4" class="texto-2 text-center py-4">
+                    Sin calificaciones registradas.
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="col-xl-7">
+    <div class="tarjeta h-100">
+      <div class="tarjeta-titulo">
+        <h2>{{ esEstudiante() ? 'Detalle de notas' : 'Últimas calificaciones' }}</h2>
+      </div>
+      @if (cargaNotas() === undefined) {
+        <app-cargando-filas />
+      } @else {
+        <div class="tabla-scroll">
+          <table class="tabla">
+            <thead>
+              <tr>
+                <th>Tarea</th>
+                @if (!esEstudiante()) {
+                  <th>Estudiante</th>
+                }
+                <th>Nota</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (c of notas(); track c.id) {
+                <tr>
+                  <td>
+                    <a
+                      [routerLink]="['/tareas', c.id_tarea]"
+                      class="fw-semibold text-decoration-none"
+                      >{{ c.tarea }}</a
+                    >
+                    <small class="d-block texto-3">{{ c.materia }}</small>
+                    @if (c.observacion) {
+                      <small class="d-block texto-2 fst-italic">“{{ c.observacion }}”</small>
+                    }
+                  </td>
+                  @if (!esEstudiante()) {
+                    <td>{{ c.estudiante }}</td>
+                  }
+                  <td>
+                    <span class="nota-pastilla texto-nota" [attr.data-tono]="tonoNota(c.nota)">{{
+                      c.nota.toFixed(1)
+                    }}</span>
+                  </td>
+                  <td class="texto-2 small text-nowrap">{{ relativo(c.fecha) }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4">
+                    <app-estado-vacio
+                      icono="award"
+                      titulo="Sin calificaciones"
+                      texto="Cuando se registren notas aparecerán aquí."
+                    />
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+  </div>
+</div>

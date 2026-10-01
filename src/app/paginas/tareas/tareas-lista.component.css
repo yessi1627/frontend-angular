@@ -1,0 +1,36 @@
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 1.1rem 1.5rem;
+  border-bottom: 1px solid var(--s-borde);
+}
+.filtro {
+  width: auto;
+  min-width: 200px;
+}
+.enlace-tarea {
+  font-weight: 600;
+  color: var(--s-texto);
+  text-decoration: none;
+}
+.enlace-tarea:hover {
+  color: var(--s-primario);
+}
+.descripcion {
+  max-width: 380px;
+}
+.materia {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  background: var(--s-primario-suave);
+  color: var(--s-primario);
+}
+@media (max-width: 640px) {
+  .filtro {
+    flex: 1;
+    min-width: 0;
+  }
+}

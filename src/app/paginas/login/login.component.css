@@ -1,0 +1,114 @@
+.login {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  min-height: 100vh;
+}
+.panel-marca {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2.5rem 3rem;
+  overflow: hidden;
+  color: #e0e7ff;
+  background:
+    radial-gradient(circle at 15% 85%, rgba(99, 102, 241, 0.55), transparent 45%),
+    radial-gradient(circle at 90% 10%, rgba(59, 130, 246, 0.45), transparent 40%),
+    linear-gradient(160deg, #0f1e4a, #1e3a8a);
+}
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.3rem;
+  color: #fff;
+  letter-spacing: 0.05em;
+}
+.marca-logo {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  font-size: 1.35rem;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.mensaje {
+  max-width: 460px;
+}
+.mensaje h2 {
+  color: #fff;
+  font-size: 2.1rem;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+.mensaje p {
+  font-size: 1.05rem;
+  opacity: 0.85;
+}
+.mensaje ul {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0 0;
+  display: grid;
+  gap: 0.9rem;
+}
+.mensaje li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.mensaje li i {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+.panel-marca small {
+  opacity: 0.6;
+}
+.panel-formulario {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 2rem 1.5rem;
+  background: var(--s-superficie);
+}
+.tema {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+}
+.formulario {
+  width: 100%;
+  max-width: 380px;
+}
+.formulario h1 {
+  font-size: 1.75rem;
+  margin-bottom: 0.35rem;
+}
+.ver-clave {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: none;
+  color: var(--s-texto-3);
+  padding: 0.25rem 0.5rem;
+}
+.ver-clave:hover {
+  color: var(--s-primario);
+}
+@media (max-width: 900px) {
+  .login {
+    grid-template-columns: 1fr;
+  }
+  .panel-marca {
+    display: none;
+  }
+}

@@ -1,0 +1,31 @@
+.rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+.materia {
+  overflow: hidden;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.materia:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--s-sombra-alta);
+}
+.franja {
+  height: 5px;
+}
+.icono {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  font-size: 1.3rem;
+  background: var(--s-superficie-2);
+}
+.materia h2 {
+  font-size: 1.05rem;
+  margin: 1rem 0 0.35rem;
+}
