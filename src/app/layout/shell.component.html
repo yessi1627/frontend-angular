@@ -1,0 +1,94 @@
+<div class="shell" [class.menu-abierto]="menuAbierto()">
+  <aside class="lateral" aria-label="Menú principal">
+    <a routerLink="/inicio" class="marca">
+      <span class="marca-logo"><i class="bi bi-mortarboard-fill"></i></span>
+      <span>
+        <strong>SIULT</strong>
+        <small>Gestión escolar</small>
+      </span>
+    </a>
+
+    <nav class="navegacion">
+      <span class="seccion">Menú</span>
+      @for (item of menu(); track item.ruta) {
+        <a [routerLink]="item.ruta" routerLinkActive="activo" class="enlace">
+          <i class="bi" [class]="'bi bi-' + item.icono"></i>
+          <span>{{ item.texto }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="lateral-pie">
+      <div class="usuario-mini">
+        <span class="avatar">{{ sesion.iniciales() }}</span>
+        <span class="text-truncate">
+          <strong class="d-block text-truncate">{{ sesion.usuario()?.nombres }}</strong>
+          <small>{{ nombreRol() }}</small>
+        </span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="velo" (click)="menuAbierto.set(false)"></div>
+
+  <div class="principal">
+    <header class="superior">
+      <button
+        type="button"
+        class="btn btn-icono d-lg-none"
+        (click)="menuAbierto.set(true)"
+        aria-label="Abrir menú"
+      >
+        <i class="bi bi-list fs-4"></i>
+      </button>
+      <h1 class="titulo-superior">{{ titulo() }}</h1>
+
+      <div class="d-flex align-items-center gap-1 ms-auto">
+        <button
+          type="button"
+          class="btn btn-icono"
+          (click)="tema.alternar()"
+          [attr.aria-label]="
+            tema.tema() === 'oscuro' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'
+          "
+          [title]="tema.tema() === 'oscuro' ? 'Modo claro' : 'Modo oscuro'"
+        >
+          <i
+            class="bi fs-5"
+            [class]="tema.tema() === 'oscuro' ? 'bi bi-sun' : 'bi bi-moon-stars'"
+          ></i>
+        </button>
+
+        <app-campana />
+
+        <div class="position-relative ms-1">
+          <button
+            type="button"
+            class="boton-usuario"
+            (click)="menuUsuario.set(!menuUsuario())"
+            [attr.aria-expanded]="menuUsuario()"
+          >
+            <span class="avatar">{{ sesion.iniciales() }}</span>
+            <i class="bi bi-chevron-down small texto-3 d-none d-sm-inline"></i>
+          </button>
+          @if (menuUsuario()) {
+            <div class="capa" (click)="menuUsuario.set(false)"></div>
+            <div class="menu-usuario tarjeta">
+              <div class="px-3 py-3 border-bottom">
+                <strong class="d-block">{{ sesion.usuario()?.nombres }}</strong>
+                <small class="texto-2">{{ sesion.usuario()?.email }}</small>
+              </div>
+              <button type="button" class="opcion" (click)="salir()">
+                <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    </header>
+
+    <main class="contenido">
+      <router-outlet />
+    </main>
+  </div>
+</div>
