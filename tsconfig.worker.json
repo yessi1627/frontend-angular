@@ -1,0 +1,10 @@
+/* Configuracion de TypeScript para los Web Workers (hilos separados del navegador). */
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/worker",
+    "lib": ["es2022", "webworker"],
+    "types": []
+  },
+  "include": ["src/**/*.worker.ts"]
+}
