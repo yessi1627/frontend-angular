@@ -1,12 +1,3 @@
-/**
- * Funciones puras para estadisticas de notas (equivalentes a lib/funciones_notas.php del backend).
- *
- * Son puras porque:
- *  - siempre devuelven lo mismo para la misma entrada,
- *  - no modifican el arreglo recibido (es `readonly`) ni variables externas,
- *  - no hacen peticiones HTTP ni tocan el DOM.
- * Se construyen con map, filter y reduce en lugar de ciclos que acumulan en variables.
- */
 
 export const NOTA_MINIMA_APROBACION = 3.0;
 

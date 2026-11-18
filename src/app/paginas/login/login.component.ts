@@ -1,25 +1,28 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { aErrorApi } from '../../core/funcional/resultado';
 import { SesionService } from '../../core/servicios/sesion.service';
-import { TemaService } from '../../core/servicios/tema.service';
+import { PanelAccesoComponent } from '../acceso/panel-acceso.component';
 
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink, PanelAccesoComponent],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css',
 })
 export class LoginComponent {
   private readonly sesion = inject(SesionService);
   private readonly router = inject(Router);
   private readonly ruta = inject(ActivatedRoute);
-  protected readonly tema = inject(TemaService);
 
   protected readonly enviando = signal(false);
   protected readonly error = signal<string | null>(
     this.ruta.snapshot.queryParamMap.has('expirada') ? 'Su sesión expiró. Ingrese de nuevo.' : null,
+  );
+  protected readonly exito = signal<string | null>(
+    this.ruta.snapshot.queryParamMap.has('restablecida')
+      ? 'Su contraseña fue actualizada. Ya puede ingresar.'
+      : null,
   );
   protected readonly verClave = signal(false);
 
@@ -35,6 +38,7 @@ export class LoginComponent {
     }
     this.enviando.set(true);
     this.error.set(null);
+    this.exito.set(null);
     const { email, password } = this.formulario.getRawValue();
     this.sesion.iniciarSesion(email, password).subscribe({
       next: () => {

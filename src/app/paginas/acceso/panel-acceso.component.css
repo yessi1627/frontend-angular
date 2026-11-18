@@ -1,0 +1,144 @@
+.pagina {
+  position: relative;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem 1.25rem;
+  overflow: hidden;
+  background: #eef2ff;
+}
+:host-context([data-bs-theme='dark']) .pagina {
+  background: #0b1120;
+}
+:host-context([data-bs-theme='dark']) .forma-1 {
+  background: #1e293b;
+}
+.forma {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+.forma-1 {
+  width: 420px;
+  height: 420px;
+  top: -140px;
+  right: -120px;
+  background: #c7d2fe;
+  opacity: 0.7;
+}
+.forma-2 {
+  width: 300px;
+  height: 300px;
+  bottom: -110px;
+  left: -90px;
+  border: 46px solid #2563eb;
+  opacity: 0.85;
+}
+.forma-3 {
+  width: 90px;
+  height: 90px;
+  bottom: 12%;
+  right: 8%;
+  background: #fbbf24;
+  opacity: 0.5;
+}
+.tema {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+}
+.tarjeta-acceso {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  width: 100%;
+  max-width: 1040px;
+  min-height: 580px;
+  border-radius: 24px;
+  overflow: hidden;
+  background: var(--s-superficie);
+  box-shadow: 0 30px 80px rgba(30, 58, 138, 0.22);
+}
+.lado-ilustracion {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 2rem 2.25rem;
+}
+.marca {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.15rem;
+  color: var(--s-texto);
+  letter-spacing: 0.04em;
+}
+.marca-logo {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  color: #fff;
+  background: linear-gradient(135deg, #2563eb, #1e3a8a);
+}
+.mensajes {
+  text-align: center;
+}
+.mensaje {
+  min-height: 3rem;
+  margin: 0 auto 0.75rem;
+  max-width: 340px;
+  font-size: 1.02rem;
+  font-weight: 500;
+  color: var(--s-texto-2);
+  animation: aparecer 0.6s ease;
+}
+.puntos {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+}
+.puntos span {
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  background: var(--s-borde);
+  transition:
+    width 0.3s ease,
+    background-color 0.3s ease;
+}
+.puntos span.activo {
+  width: 22px;
+  background: #2563eb;
+}
+.lado-formulario {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 3rem 2.75rem;
+  color: #fff;
+  background: linear-gradient(160deg, #2563eb 0%, #1d4ed8 45%, #1e3a8a 100%);
+}
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@media (max-width: 860px) {
+  .tarjeta-acceso {
+    grid-template-columns: 1fr;
+    max-width: 460px;
+    min-height: 0;
+  }
+  .lado-ilustracion {
+    display: none;
+  }
+  .lado-formulario {
+    padding: 2.5rem 1.75rem;
+  }
+}

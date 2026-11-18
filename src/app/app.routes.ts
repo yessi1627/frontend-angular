@@ -9,6 +9,18 @@ export const routes: Routes = [
     loadComponent: () => import('./paginas/login/login.component').then((m) => m.LoginComponent),
   },
   {
+    path: 'recuperar',
+    canActivate: [invitadoGuard],
+    loadComponent: () =>
+      import('./paginas/acceso/recuperar.component').then((m) => m.RecuperarComponent),
+  },
+  {
+    path: 'restablecer',
+    canActivate: [invitadoGuard],
+    loadComponent: () =>
+      import('./paginas/acceso/restablecer.component').then((m) => m.RestablecerComponent),
+  },
+  {
     path: '',
     canActivate: [autenticadoGuard],
     loadComponent: () => import('./layout/shell.component').then((m) => m.ShellComponent),

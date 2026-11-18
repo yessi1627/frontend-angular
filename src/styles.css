@@ -578,3 +578,109 @@ h5 {
   padding-left: 1rem;
   padding-right: 1rem;
 }
+
+/* ---------- Formularios de acceso (login, recuperar y restablecer contraseña) ---------- */
+.acceso-titulo {
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+.acceso-texto {
+  color: #dbeafe;
+  margin-bottom: 1.75rem;
+}
+.acceso-campo {
+  position: relative;
+  margin-bottom: 1rem;
+}
+.acceso-campo > i:first-child {
+  position: absolute;
+  left: 1.1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  pointer-events: none;
+}
+.acceso-campo .form-control {
+  height: 50px;
+  padding-left: 2.8rem;
+  padding-right: 2.8rem;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: #fff;
+  color: #0f172a;
+}
+.acceso-campo .form-control::placeholder {
+  color: #94a3b8;
+}
+.acceso-campo .form-control:focus {
+  border-color: #fbbf24;
+  box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.3);
+  background: #fff;
+  color: #0f172a;
+}
+.acceso-campo .form-control.is-invalid {
+  border-color: #fca5a5;
+}
+.acceso-ojo {
+  position: absolute;
+  right: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: none;
+  color: #64748b;
+  padding: 0.25rem 0.4rem;
+}
+.acceso-ojo:hover {
+  color: #1d4ed8;
+}
+.acceso-error {
+  margin: -0.5rem 0 0.9rem 1.1rem;
+  font-size: 0.82rem;
+  color: #fecaca;
+}
+.acceso-boton {
+  height: 50px;
+  border: 0;
+  border-radius: 999px;
+  font-weight: 700;
+  color: #1e293b;
+  background: #fbbf24;
+  box-shadow: 0 8px 20px rgba(251, 191, 36, 0.35);
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease;
+}
+.acceso-boton:hover:not(:disabled) {
+  background: #f59e0b;
+  transform: translateY(-1px);
+}
+.acceso-boton:disabled {
+  opacity: 0.7;
+}
+.acceso-enlace {
+  color: #fff;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+}
+.acceso-enlace:hover {
+  color: #fde68a;
+  border-color: #fde68a;
+}
+.acceso-aviso {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.25rem;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+}
+.acceso-aviso.error {
+  background: rgba(239, 68, 68, 0.22);
+  border-color: rgba(254, 202, 202, 0.5);
+}
