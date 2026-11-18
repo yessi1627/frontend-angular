@@ -1,0 +1,29 @@
+# INTEGRACION CONTINUA del frontend: pruebas con Vitest, compilacion de produccion e imagen Docker
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  pruebas:
+    name: Pruebas y compilacion
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx ng test --watch=false
+      - run: npx ng build --configuration production
+
+  imagen:
+    name: Construir imagen Docker
+    needs: pruebas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t siult/frontend:${{ github.sha }} .
